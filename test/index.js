@@ -23,6 +23,19 @@ describe('express-request-id', function () {
         request(app).get('/').end(done);
     });
 
+    it('should add given prefix to id', function (done) {
+        var app = require('express')();
+        app.use(requestId({valuePrefix: 'testprefix-'}));
+        app.get('/', function (req, res, next) {
+            should.exist(req);
+            req.should.have.property('id').with.lengthOf(47);
+            req.id.should.startWith('testprefix-');
+            next();
+        });
+
+        request(app).get('/').end(done);
+    });
+
     it('should use the `X-Request-Id` header value in case it was provided', function (done) {
         var app = require('express')();
         app.use(requestId());
